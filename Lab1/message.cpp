@@ -1,7 +1,7 @@
 #include "message.h"
 
-#include <QByteArray>
-#include <QDataStream>
+Message::Message()
+{}
 
 Message::Message(QByteArray& datagram)
 {

@@ -1,12 +1,13 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
-class QByteArray;
-class QDataStream;
+#include <QByteArray>
+#include <QDataStream>
 
 struct Message
 {
 public:
+    Message();
     Message(QByteArray& datagram);
     Message(quint32 state, quint32 seq, quint32 id, const QByteArray& data);
 
