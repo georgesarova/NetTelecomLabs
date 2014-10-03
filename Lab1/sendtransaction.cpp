@@ -76,16 +76,17 @@ bool SendTransaction::ReceiveMessage(Message& message)
 void SendTransaction::RequestId()
 {
     connect(&socket_, SIGNAL(readyRead()), this, SLOT(IdReceived()));
+
     if (!TransmitMessage(State::Request::REQ_ID, file_->fileName().toUtf8()))
     {
-        socket_.disconnect();
+        disconnect(&socket_, SIGNAL(readyRead()), 0, 0);
         emit TransmissionFailed(State::Error::RETRANSMISSION_FAILED);
     }
 }
 
 void SendTransaction::IdReceived()
 {
-    socket_.disconnect();
+    disconnect(&socket_, SIGNAL(readyRead()), 0, 0);
 
     Message msg;
     if (!ReceiveMessage(msg))
@@ -118,14 +119,14 @@ void SendTransaction::SendData()
 
     if (!TransmitMessage(State::Request::SEND_DATA, current_block_))
     {
-        socket_.disconnect();
+        disconnect(&socket_, SIGNAL(readyRead()), 0, 0);
         emit TransmissionFailed(State::Error::RETRANSMISSION_FAILED);
     }
 }
 
 void SendTransaction::DataReceived()
 {
-    socket_.disconnect();
+    disconnect(&socket_, SIGNAL(readyRead()), 0, 0);
 
     Message msg;
     if (ReceiveMessage(msg) && msg.state == State::Response::RECV_DATA)
@@ -149,7 +150,7 @@ void SendTransaction::SendFinished()
 
 void SendTransaction::FinishReceived()
 {
-    socket_.disconnect();
+    disconnect(&socket_, SIGNAL(readyRead()), 0, 0);
 
     Message msg;
     if (!ReceiveMessage(msg) || msg.state != State::Response::RECV_FINISH)
