@@ -7,7 +7,10 @@
 #include "helpers.h"
 #include "message.h"
 
-SendTransaction::SendTransaction(int timeout, int MTU, int max_retransmissions, QObject *parent)
+SendTransaction::SendTransaction(int timeout,
+                                 int MTU,
+                                 int max_retransmissions,
+                                 QObject *parent)
     : QObject(parent),
       timeout_(timeout),
       max_retransmissions_(max_retransmissions)
@@ -37,7 +40,6 @@ void SendTransaction::SendMessage(quint32 state, const QByteArray& data)
     QDataStream stream(&datagram, QIODevice::ReadWrite);
     stream << Message(state, seq_, id_, data);
     socket_.writeDatagram(datagram, addr_, port_);
-    ++seq_;
 }
 
 bool SendTransaction::TransmitMessage(quint32 state, const QByteArray& data)
@@ -61,9 +63,10 @@ bool SendTransaction::ReceiveMessage(Message& message)
         datagram.resize(socket_.pendingDatagramSize());
         socket_.readDatagram(datagram.data(), datagram.size());
         Message msg(datagram);
-        if (msg.seq == seq_ - 1)
+        if (msg.seq == seq_)
         {
             message = msg;
+            ++seq_;
             return true;
         }
     }
